@@ -103,3 +103,18 @@ p1_brfss %>%
   ) + theme(legend.position = "none",axis.text.x = element_text(angle = 45))
 ```
 
+### Problem 2
+
+Write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
+
+#### Problem 2.1 How many aisles are there, and which aisles are the most items ordered from?
+
+```{r p2.1}
+instacart %>% 
+  group_by(aisle) %>% 
+  summarize(n_item = n()) %>% 
+  arrange(desc(n_item))
+```
+
+Answer: There are 134 aisles in the dataset. The fresh vegtables, frresh fruits, packaged vegetables fruits are the top three aisles with the most items ordered. 
+
