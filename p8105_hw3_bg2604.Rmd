@@ -1,0 +1,20 @@
+---
+title: "p8105_hw3_bg2604"
+author: "Boya Guo"
+date: "10/15/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+library(tidyverse)
+library(ggridges)
+library(hexbin)
+devtools::install_github("thomasp85/patchwork")
+theme_set(theme_bw())
+```
