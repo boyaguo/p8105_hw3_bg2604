@@ -191,8 +191,57 @@ ny_noaa %>%
 ```
 Answer: This is a 2595176*7 dataset. The variables include NY weather station id, the date of observation, precipitation (mm), snowfall (mm), snow depth (mm), and the maximum and minimum temperatures (tenths of degrees C). Missing data could be a big problem becasue a large proportion of data is missing.
 
+#### Problem 3.1 Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
+
 ```{r p3.1}
-
+ny_noaa_3.1 <- ny_noaa %>% 
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(prcp = prcp / 10,
+         tmax = as.numeric(tmax) / 10,
+         tmin = as.numeric(tmin) / 10)
+  count(ny_noaa, snow) %>% arrange(desc(n))
 ```
+Answer: We seperated date into year, month and day, and then enxure reasonable units. The most commonly observed value is 0 for snowfall because we could have snowfall in winter. Therefore, snowdall is less frequent and most values is 0.
+
+#### Problem 3.2 Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+
+```{r p3.2}
+ny_noaa_3.1 %>% 
+  group_by(id, year, month) %>% 
+  summarize(mean_tmax = round(mean(tmax, na.rm = TRUE), digits = 1),
+            mean_tmin = round(mean(tmin, na.rm = TRUE), digits = 1)) %>% 
+  na.omit() %>% 
+  gather(key = mean_temp, value = temp, mean_tmax) %>%
+  filter(month %in% c("01", "07")) %>% 
+  ggplot(aes(x = year, y = temp)) + geom_boxplot() +   
+  facet_grid(~month) + 
+  theme(axis.text.x = element_text(size = 5, angle = 45),legend.position = "bottom") +
+   labs(
+    title = "Average max temperature in January and July in each station, 1981 to 2010", x = "Year", y = "Average max temperature in ˚C"
+  )
+```
+Answer: There is approximate same pattern for tmax across years. For tmax in January, the range of tmax is from -10 to 5 degree. For tmax in July, the tmax ranges from 25 to 30. Outliers: Jan 1982, an outlier below -10 degree; July 1987, an outlier below 15 degree.
 
 
+#### Problem 3.3 Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+
+```{r p3.3}
+ny_noaa_3.3 <- ny_noaa_3.1 %>% 
+  ggplot(aes(x = tmax, y = tmin)) + geom_hex()  +
+  labs(
+    title = "Hex plot of maximum temperature/minimum temperature",
+    x = "maximum temperature",
+    y = "minimum temperature"
+  )
+ny_noaa_3.3
+
+ny_noaa_3 <- ny_noaa_3.1 %>% 
+  filter(snow > 0 & snow < 100) %>% 
+  ggplot(aes(x = snow, y = year)) + geom_density_ridges(scale = 1) +
+  labs(
+    title = "Density plot of snowfall from 0 mm to 100 mm across years",
+    x = "Snow Fall in mm", y = "Year")
+
+ny_noaa_3
+```
+Answer: From the hexplot we can conclude that there is an linear relationship between tmax and tmin. The light blue indicates that there are more counts in the plot. From ridges plot of snowfall, we observe the same pattern of snowfall distribution across years.
