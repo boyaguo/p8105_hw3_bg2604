@@ -77,7 +77,29 @@ brfss_p1.3
 
 #### Problem 1.4 For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
 
-```{r}
-
+```{r p1.4}
+p1_brfss %>% 
+  spread(key = "response", value = "data_value") %>% 
+  janitor::clean_names() %>% 
+  select(year, state, county, excellent:poor) %>% 
+  group_by(year, state) %>% 
+  summarize(mean_excellent = mean(excellent, na.rm = TRUE),
+            mean_very_good = mean(very_good, na.rm = TRUE),
+            mean_good = mean(good, na.rm = TRUE),
+            mean_fair = mean(fair, na.rm = TRUE),
+            mean_poor = mean(poor, na.rm = TRUE)
+            ) %>% 
+  gather(key = "mean_response", value = "average_proportion",    
+  mean_excellent:mean_poor) %>%
+  mutate(mean_response = as.factor(mean_response),
+  mean_response = factor(mean_response, levels = c("mean_excellent", "mean_very_good", "mean_good", "mean_fair", "mean_poor"))) %>% 
+  ggplot(aes(x = year, y = average_proportion, color = state)) + 
+  geom_point() + geom_line() +
+  facet_grid(~mean_response) +
+  labs(
+    title = "Average proportion in each overall health response for years and states",
+    x = "Year",
+    y = "Average proportion"
+  ) + theme(legend.position = "none",axis.text.x = element_text(angle = 45))
 ```
 
