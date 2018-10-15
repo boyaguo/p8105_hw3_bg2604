@@ -140,7 +140,13 @@ instacart_p2.2
 #### Problem 2.3 Make a table showing the most popular item in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”.
 
 ```{r p2.3}
-
+instacart %>%  
+  filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>% 
+  group_by(aisle, product_name) %>% 
+  summarize(count = n()) %>% 
+  group_by(aisle) %>% 
+  mutate(rank = min_rank(desc(count))) %>%  
+  filter(rank < 2)
 ```
 
-
+Answer: The most popular items in baking ingredients, dog food care, and packaged vegetables fruits are Light Brown Suger, Snack Sticks Chicken & Rice Recipe Dog Treats, and Organic Baby Spinach, respectively.
